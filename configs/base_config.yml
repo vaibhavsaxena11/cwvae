@@ -1,0 +1,42 @@
+# MODEL
+levels: 3
+tmp_abs_factor: 6
+dec_stddev: null
+model_dir_prefix: null
+enc_dense_layers: 3
+enc_dense_embed_size: 1000
+cell_type: RSSMCell
+cell_stoch_size: null
+cell_deter_size: null
+cell_embed_size: null
+cell_min_stddev: 0.0001
+cell_mean_only: False
+cell_reset_state: False
+use_obs: True
+channels_mult: 1
+
+# DATASET
+datadir: null
+dataset: null
+seq_len: null
+eval_seq_len: null
+channels: null
+
+# TRAINING
+lr: null
+batch_size: 50
+num_epochs: 300
+kl_grad_post_perc: null
+free_nats: null
+beta: null
+clip_grad_norm_by: 10000
+
+# SUMMARIES
+logdir: null
+open_loop_ctx: 36
+num_val_batches: 1
+save_gifs: True
+save_scalars_every: 1000
+save_gifs_every: 1000
+save_model_every: 1000
+save_named_model_every: null

@@ -1,0 +1,27 @@
+# MODEL
+levels: 3
+tmp_abs_factor: 6
+dec_stddev: 0.4
+enc_dense_embed_size: 1000
+cell_type: RSSMCell
+cell_stoch_size: 100
+cell_deter_size: 800
+cell_embed_size: 800
+
+# DATASET
+datadir: null
+dataset: minerl
+seq_len: 100
+eval_seq_len: 500
+channels: 3
+
+# TRAINING
+lr: 0.0001
+batch_size: 50
+num_epochs: 600
+
+# SUMMARIES
+logdir: null
+open_loop_ctx: 36
+num_val_batches: 1
+save_named_model_every: 5000
