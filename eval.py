@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 import numpy as np
 
+import tensorflow.compat.v1 as tf
+
 from cwvae import build_model
 from data_loader import *
 import tools

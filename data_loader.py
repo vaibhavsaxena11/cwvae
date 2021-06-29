@@ -144,7 +144,7 @@ class MovingMNIST:
         return seq
 
 
-def load_dataset(cfg, **kwargs):
+def load_dataset(cfg):
     if cfg.dataset == "minerl":
         import minerl_navigate
 

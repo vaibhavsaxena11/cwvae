@@ -1,9 +1,6 @@
 """gqn_mazes dataset."""
 
-import tensorflow as tf
 import tensorflow_datasets as tfds
-
-import numpy as np
 
 _DESCRIPTION = """
 # GQN Mazes Dataset

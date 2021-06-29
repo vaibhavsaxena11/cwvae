@@ -1,9 +1,6 @@
 import tensorflow.compat.v1 as tf
 from tensorflow.keras import layers as tfkl
-import tensorflow_probability as tfp
 from tensorflow_probability import distributions as tfd
-import numpy as np
-from collections import namedtuple
 
 import tools
 
@@ -15,7 +12,6 @@ class RSSMCell(tools.Module):
         detstate_size,
         embed_size,
         reset_states=False,
-        reuse=None,
         min_stddev=0.0001,
         mean_only=False,
         var_scope="rssm_cell",

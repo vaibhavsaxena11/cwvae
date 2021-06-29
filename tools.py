@@ -39,7 +39,7 @@ class Step:
         return self._session.run(self._step)
 
 
-def exp_name(cfg, model_dir_prefix=None):
+def exp_name(cfg):
     exp_name = "{}_cwvae_{}".format(cfg.dataset, cfg.cell_type.lower())
     exp_name += "_{}l_f{}".format(cfg.levels, cfg.tmp_abs_factor)
     exp_name += "_decsd{}".format(cfg.dec_stddev)

@@ -1,6 +1,4 @@
-import numpy as np
 import tensorflow.compat.v1 as tf
-from tensorflow_probability import distributions as tfd
 
 import cnns
 from cells import *
