@@ -40,28 +40,22 @@ class Step:
 
 
 def exp_name(cfg):
-    exp_name = "{}_cwvae_{}".format(cfg.dataset, cfg.cell_type.lower())
-    exp_name += "_{}l_f{}".format(cfg.levels, cfg.tmp_abs_factor)
-    exp_name += "_decsd{}".format(cfg.dec_stddev)
-    exp_name += "_enchl{}_ences{}_edchnlmult{}".format(
-        cfg.enc_dense_layers, cfg.enc_dense_embed_size, cfg.channels_mult
-    )
-    exp_name += "_ss{}_ds{}_es{}".format(
-        cfg.cell_stoch_size, cfg.cell_deter_size, cfg.cell_embed_size
-    )
-    exp_name += "_seq{}_lr{}_bs{}".format(cfg.seq_len, cfg.lr, cfg.batch_size)
+    exp_name = f"{cfg.dataset}_cwvae_{cfg.cell_type.lower()}"
+    exp_name += f"_{cfg.levels}l_f{cfg.tmp_abs_factor}"
+    exp_name += f"_decsd{cfg.dec_stddev}"
+    exp_name += f"_enchl{cfg.enc_dense_layers}_ences{cfg.enc_dense_embed_size}_edchnlmult{cfg.channels_mult}"
+    exp_name += f"_ss{cfg.cell_stoch_size}_ds{cfg.cell_deter_size}_es{cfg.cell_embed_size}"
+    exp_name += f"_seq{cfg.seq_len}_lr{cfg.lr}_bs{cfg.batch_size}"
     return exp_name
 
 
 def validate_config(cfg):
     assert (
         cfg.channels is not None and cfg.channels > 0
-    ), "Incompatible channels = {} found in config.".format(cfg.config)
+    ), f"Incompatible channels = {cfg.config} found in config."
     assert (
         cfg.open_loop_ctx % (cfg.tmp_abs_factor ** (cfg.levels - 1)) == 0
-    ), "Incompatible open-loop context length {} and temporal abstraction factor {} for levels {}".format(
-        cfg.open_loop_ctx, cfg.tmp_abs_factor, cfg.levels
-    )
+    ), f"Incompatible open-loop context length {cfg.open_loop_ctx} and temporal abstraction factor {cfg.tmp_abs_factor} for levels {cfg.levels}"
     assert cfg.datadir is not None, "data root directory cannot be None."
     assert cfg.logdir is not None, "log root directory cannot be None."
 
@@ -140,7 +134,7 @@ def save_as_grid(images, save_dir, filename, strip_width=50):
                 results.append(_to_padded_strip(images[i : i + strip_width]))
     grid = np.concatenate(results, 0)
     imageio.imwrite(os.path.join(save_dir, filename), grid)
-    print("Written grid file {}".format(os.path.join(save_dir, filename)))
+    print(f"Written grid file {os.path.join(save_dir, filename)}")
 
 
 def compute_metrics(gt, pred):
@@ -164,8 +158,8 @@ def compute_metrics(gt, pred):
 def plot_metrics(metrics, logdir, name):
     mean_metric = np.squeeze(np.mean(metrics, 0))
     stddev_metric = np.squeeze(np.std(metrics, 0))
-    np.savez(os.path.join(logdir, "{}_mean.npz".format(name)), mean_metric)
-    np.savez(os.path.join(logdir, "{}_stddev.npz".format(name)), stddev_metric)
+    np.savez(os.path.join(logdir, f"{name}_mean.npz"), mean_metric)
+    np.savez(os.path.join(logdir, f"{name}_stddev.npz"), stddev_metric)
 
     plt.figure()
     axes = plt.gca()
@@ -178,4 +172,4 @@ def plot_metrics(metrics, logdir, name):
         color="blue",
         alpha=0.4,
     )
-    plt.savefig(os.path.join(logdir, "{}_range.png".format(name)))
+    plt.savefig(os.path.join(logdir, f"{name}_range.png"))

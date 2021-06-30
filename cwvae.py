@@ -35,9 +35,7 @@ class CWVAE:
             if self.cell_type == "RSSMCell":
                 assert (
                     self._detstate_size
-                ), "deter state size should be non-zero int, found {}".format(
-                    self._detstate_size
-                )
+                ), f"deter state size should be non-zero int, found {self._detstate_size}"
                 cell = RSSMCell(
                     self._state_size,
                     self._detstate_size,
@@ -48,7 +46,7 @@ class CWVAE:
                     var_scope="cell_" + str(i_lvl),
                 )
             else:
-                raise ValueError("Cell type {} not supported".format(self.cell_type))
+                raise ValueError(f"Cell type {self.cell_type} not supported")
             self.cells.append(cell)
 
     def hierarchical_unroll(
@@ -109,7 +107,7 @@ class CWVAE:
 
         for level in range(level_top, -1, -1):
             obs_inputs = inputs[level]
-            print("Input shape in CWVAE level {}: {}".format(level, obs_inputs.shape))
+            print(f"Input shape in CWVAE level {level}: {obs_inputs.shape}")
             if level == level_top:
                 reset_state, reset_state_next = (
                     tf.ones(shape=tf.concat([tf.shape(obs_inputs)[0:2], [1]], -1)),

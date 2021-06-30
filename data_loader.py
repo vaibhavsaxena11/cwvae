@@ -198,7 +198,7 @@ def load_dataset(cfg):
         ).get_batch()
 
     else:
-        raise ValueError("Dataset {} not supported.".format(cfg.dataset))
+        raise ValueError(f"Dataset {cfg.dataset} not supported.")
     return train_data_batch, test_data_batch
 
 
