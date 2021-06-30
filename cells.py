@@ -113,10 +113,6 @@ class RSSMCell(tools.Module):
             "output": self._state_size + self._detstate_size,
         }
 
-    @property
-    def out_state_size(self):
-        return {"out": (self.state_size, self.state_size), "state": self.state_size}
-
     def zero_state(self, batch_size, dtype=tf.float32):
         return dict(
             [
