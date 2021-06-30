@@ -12,7 +12,7 @@ import tools
 
 
 def train_setup(cfg, loss):
-    session_config = tf.ConfigProto(device_count={"GPU": 1}, log_device_placement=False)
+    session_config = tf.ConfigProto(device_count=dict(GPU=1), log_device_placement=False)
     session = tf.Session(config=session_config)
     step = tools.Step(session)
 

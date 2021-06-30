@@ -103,7 +103,7 @@ class CWVAE:
         prior_list = []  # Stored bot to top.
         posterior_list = []  # Stored bot to top.
 
-        last_state_all_levels = list([])
+        last_state_all_levels = []
 
         for level in range(level_top, -1, -1):
             obs_inputs = inputs[level]
@@ -271,7 +271,7 @@ class CWVAE:
         assert len(nll_term.shape) == 0, nll_term.shape
 
         # Computing KLs between priors and posteriors
-        self.kld_all_levels = list([])
+        self.kld_all_levels = []
         kl_term = tf.constant(0.0)
         for i in range(self._levels):
             kld_level = self._gaussian_KLD(posteriors[i], priors[i])
@@ -355,19 +355,10 @@ def build_model(cfg, open_loop=True):
         free_nats=cfg.free_nats,
         beta=cfg.beta,
     )
-    out = {
-        "training": {
-            "obs": obs,
-            "encoder": encoder,
-            "decoder": decoder,
-            "obs_encoded": obs_encoded,
-            "obs_decoded": obs_decoded,
-            "priors": priors,
-            "posteriors": posteriors,
-            "loss": loss,
-        },
-        "meta": {"model": model},
-    }
+    out = dict(training=dict(obs=obs, encoder=encoder, decoder=decoder,
+                             obs_encoded=obs_encoded, obs_decoded=obs_decoded,
+                             priors=priors, posteriors=posteriors, loss=loss),
+               meta={"model": model})
     if open_loop:
         posteriors_recon, priors_onestep, priors_multistep = model.open_loop_unroll(
             obs_encoded, cfg.open_loop_ctx, use_observations=cfg.use_obs
@@ -377,13 +368,10 @@ def build_model(cfg, open_loop=True):
         obs_decoded_prior_multistep = decoder(priors_multistep[0]["output"])
         gt_multistep = obs[:, cfg.open_loop_ctx :, ...]
         out.update(
-            {
-                "open_loop_obs_decoded": {
-                    "posterior_recon": obs_decoded_posterior_recon,
-                    "prior_onestep": obs_decoded_prior_onestep,
-                    "prior_multistep": obs_decoded_prior_multistep,
-                    "gt_multistep": gt_multistep,
-                }
-            }
+            dict(open_loop_obs_decoded=dict(
+                posterior_recon=obs_decoded_posterior_recon,
+                prior_onestep=obs_decoded_prior_onestep,
+                prior_multistep=obs_decoded_prior_multistep,
+                gt_multistep=gt_multistep))
         )
     return out

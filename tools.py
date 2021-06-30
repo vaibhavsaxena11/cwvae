@@ -125,7 +125,7 @@ def _to_padded_strip(images):
 def save_as_grid(images, save_dir, filename, strip_width=50):
     # Creating a grid of images.
     # images shape: (T, ...)
-    results = list([])
+    results = []
     if images.shape[0] < strip_width:
         results.append(_to_padded_strip(images))
     else:

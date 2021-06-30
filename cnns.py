@@ -94,7 +94,7 @@ class Encoder(tools.Module):
             )  # shape: (B, T, :)
             layer = hidden
 
-            layers = list([])
+            layers = []
             layers.append(layer)
             print(f"Input shape at level 0: {layer.shape}")
 
