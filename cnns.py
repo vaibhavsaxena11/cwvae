@@ -47,13 +47,11 @@ class Encoder(tools.Module):
         self._kwargs = dict(strides=2, activation=self._activation, use_bias=True)
         self._var_scope = var_scope
 
-        assert levels >= 1, "levels should be >=1, found {}".format(levels)
-        assert tmp_abs_factor >= 1, "tmp_abs_factor should be >=1, found {}".format(
-            tmp_abs_factor
-        )
+        assert levels >= 1, f"levels should be >=1, found {levels}"
+        assert tmp_abs_factor >= 1, f"tmp_abs_factor should be >=1, found {tmp_abs_factor}"
         assert (
             not dense_layers or embed_size
-        ), "embed_size={} invalid for Dense layer".format(embed_size)
+        ), f"embed_size={embed_size} invalid for Dense layer"
 
     def __call__(self, obs):
         """
@@ -96,23 +94,23 @@ class Encoder(tools.Module):
             )  # shape: (B, T, :)
             layer = hidden
 
-            layers = list([])
+            layers = []
             layers.append(layer)
-            print("Input shape at level {}: {}".format(0, layer.shape))
+            print(f"Input shape at level 0: {layer.shape}")
 
             feat_size = layer.shape[-1]
 
             for level in range(1, self._levels):
                 for i_dl in range(self._dense_layers - 1):
                     hidden = self.get(
-                        "h{}_dense".format(5 + (level - 1) * self._dense_layers + i_dl),
+                        f"h{5 + (level - 1) * self._dense_layers + i_dl}_dense",
                         tfkl.Dense,
                         self._embed_size,
                         activation=tf.nn.relu,
                     )(hidden)
                 if self._dense_layers > 0:
                     hidden = self.get(
-                        "h{}_dense".format(4 + level * self._dense_layers),
+                        f"h{4 + level * self._dense_layers}_dense",
                         tfkl.Dense,
                         feat_size,
                         activation=None,
@@ -139,7 +137,7 @@ class Encoder(tools.Module):
                 )
                 layer = tf.reduce_sum(layer, axis=2)
                 layers.append(layer)
-                print("Input shape at level {}: {}".format(level, layer.shape))
+                print(f"Input shape at level {level}: {layer.shape}")
 
         return layers
 

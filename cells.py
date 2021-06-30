@@ -1,9 +1,6 @@
 import tensorflow.compat.v1 as tf
 from tensorflow.keras import layers as tfkl
-import tensorflow_probability as tfp
 from tensorflow_probability import distributions as tfd
-import numpy as np
-from collections import namedtuple
 
 import tools
 
@@ -15,7 +12,6 @@ class RSSMCell(tools.Module):
         detstate_size,
         embed_size,
         reset_states=False,
-        reuse=None,
         min_stddev=0.0001,
         mean_only=False,
         var_scope="rssm_cell",
@@ -58,14 +54,9 @@ class RSSMCell(tools.Module):
                 sample = mean
             else:
                 sample = tfd.MultivariateNormalDiag(mean, stddev).sample()
-        return {
-            "mean": mean,
-            "stddev": stddev,
-            "sample": sample,
-            "det_out": det_out,
-            "det_state": det_state,
-            "output": tf.concat([sample, det_out], -1),
-        }
+        return dict(mean=mean, stddev=stddev, sample=sample, det_out=det_out,
+                    det_state=det_state,
+                    output=tf.concat([sample, det_out], -1))
 
     def _posterior(self, obs_inputs, prev_state, context):
         with tf.name_scope(self._var_scope):
@@ -97,29 +88,16 @@ class RSSMCell(tools.Module):
                 sample = mean
             else:
                 sample = tfd.MultivariateNormalDiag(mean, stddev).sample()
-        return {
-            "mean": mean,
-            "stddev": stddev,
-            "sample": sample,
-            "det_out": prior["det_out"],
-            "det_state": prior["det_state"],
-            "output": tf.concat([sample, prior["det_out"]], -1),
-        }
+        return dict(mean=mean, stddev=stddev, sample=sample,
+                    det_out=prior["det_out"], det_state=prior["det_state"],
+                    output=tf.concat([sample, prior["det_out"]], -1))
 
     @property
     def state_size(self):
-        return {
-            "mean": self._state_size,
-            "stddev": self._state_size,
-            "sample": self._state_size,
-            "det_out": self._detstate_size,
-            "det_state": self._detstate_size,
-            "output": self._state_size + self._detstate_size,
-        }
-
-    @property
-    def out_state_size(self):
-        return {"out": (self.state_size, self.state_size), "state": self.state_size}
+        return dict(mean=self._state_size, stddev=self._state_size,
+                    sample=self._state_size, det_out=self._detstate_size,
+                    det_state=self._detstate_size,
+                    output=self._state_size + self._detstate_size)
 
     def zero_state(self, batch_size, dtype=tf.float32):
         return dict(
@@ -131,7 +109,7 @@ class RSSMCell(tools.Module):
 
     def zero_out_state(self, batch_size, dtype=tf.float32):
         zero_st = self.zero_state(batch_size, dtype)
-        return {"out": (zero_st, zero_st), "state": zero_st}
+        return dict(out=(zero_st, zero_st), state=zero_st)
 
     def __call__(self, prev_out, inputs, use_obs):
         """
@@ -159,4 +137,4 @@ class RSSMCell(tools.Module):
         else:
             posterior = prior
 
-        return {"out": (prior, posterior), "state": posterior}
+        return dict(out=(prior, posterior), state=posterior)

@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 import numpy as np
 
+import tensorflow.compat.v1 as tf
+
 from cwvae import build_model
 from data_loader import *
 import tools
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     # Set directories.
     exp_rootdir = str(pathlib.Path(args.logdir).resolve().parent)
     eval_logdir = os.path.join(
-        exp_rootdir, "eval_{}".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+        exp_rootdir, f"eval_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     )
     os.makedirs(eval_logdir, exist_ok=True)
 
@@ -90,7 +92,7 @@ if __name__ == "__main__":
     # Define checkpoint saver for variables currently in session.
     checkpoint = Checkpoint(exp_rootdir)
 
-    print("Restoring model from {}".format(args.logdir))
+    print(f"Restoring model from {args.logdir}")
     checkpoint.restore(session, os.path.basename(os.path.normpath(args.logdir)))
 
     # Evaluating.

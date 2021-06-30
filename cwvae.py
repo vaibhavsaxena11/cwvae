@@ -1,6 +1,4 @@
-import numpy as np
 import tensorflow.compat.v1 as tf
-from tensorflow_probability import distributions as tfd
 
 import cnns
 from cells import *
@@ -37,9 +35,7 @@ class CWVAE:
             if self.cell_type == "RSSMCell":
                 assert (
                     self._detstate_size
-                ), "deter state size should be non-zero int, found {}".format(
-                    self._detstate_size
-                )
+                ), f"deter state size should be non-zero int, found {self._detstate_size}"
                 cell = RSSMCell(
                     self._state_size,
                     self._detstate_size,
@@ -50,7 +46,7 @@ class CWVAE:
                     var_scope="cell_" + str(i_lvl),
                 )
             else:
-                raise ValueError("Cell type {} not supported".format(self.cell_type))
+                raise ValueError(f"Cell type {self.cell_type} not supported")
             self.cells.append(cell)
 
     def hierarchical_unroll(
@@ -107,11 +103,11 @@ class CWVAE:
         prior_list = []  # Stored bot to top.
         posterior_list = []  # Stored bot to top.
 
-        last_state_all_levels = list([])
+        last_state_all_levels = []
 
         for level in range(level_top, -1, -1):
             obs_inputs = inputs[level]
-            print("Input shape in CWVAE level {}: {}".format(level, obs_inputs.shape))
+            print(f"Input shape in CWVAE level {level}: {obs_inputs.shape}")
             if level == level_top:
                 reset_state, reset_state_next = (
                     tf.ones(shape=tf.concat([tf.shape(obs_inputs)[0:2], [1]], -1)),
@@ -275,7 +271,7 @@ class CWVAE:
         assert len(nll_term.shape) == 0, nll_term.shape
 
         # Computing KLs between priors and posteriors
-        self.kld_all_levels = list([])
+        self.kld_all_levels = []
         kl_term = tf.constant(0.0)
         for i in range(self._levels):
             kld_level = self._gaussian_KLD(posteriors[i], priors[i])
@@ -359,19 +355,10 @@ def build_model(cfg, open_loop=True):
         free_nats=cfg.free_nats,
         beta=cfg.beta,
     )
-    out = {
-        "training": {
-            "obs": obs,
-            "encoder": encoder,
-            "decoder": decoder,
-            "obs_encoded": obs_encoded,
-            "obs_decoded": obs_decoded,
-            "priors": priors,
-            "posteriors": posteriors,
-            "loss": loss,
-        },
-        "meta": {"model": model},
-    }
+    out = dict(training=dict(obs=obs, encoder=encoder, decoder=decoder,
+                             obs_encoded=obs_encoded, obs_decoded=obs_decoded,
+                             priors=priors, posteriors=posteriors, loss=loss),
+               meta={"model": model})
     if open_loop:
         posteriors_recon, priors_onestep, priors_multistep = model.open_loop_unroll(
             obs_encoded, cfg.open_loop_ctx, use_observations=cfg.use_obs
@@ -381,13 +368,10 @@ def build_model(cfg, open_loop=True):
         obs_decoded_prior_multistep = decoder(priors_multistep[0]["output"])
         gt_multistep = obs[:, cfg.open_loop_ctx :, ...]
         out.update(
-            {
-                "open_loop_obs_decoded": {
-                    "posterior_recon": obs_decoded_posterior_recon,
-                    "prior_onestep": obs_decoded_prior_onestep,
-                    "prior_multistep": obs_decoded_prior_multistep,
-                    "gt_multistep": gt_multistep,
-                }
-            }
+            dict(open_loop_obs_decoded=dict(
+                posterior_recon=obs_decoded_posterior_recon,
+                prior_onestep=obs_decoded_prior_onestep,
+                prior_multistep=obs_decoded_prior_multistep,
+                gt_multistep=gt_multistep))
         )
     return out

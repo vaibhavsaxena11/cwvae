@@ -1,4 +1,3 @@
-import numpy as np
 import argparse
 import yaml
 import os
@@ -13,7 +12,7 @@ import tools
 
 
 def train_setup(cfg, loss):
-    session_config = tf.ConfigProto(device_count={"GPU": 1}, log_device_placement=False)
+    session_config = tf.ConfigProto(device_count=dict(GPU=1), log_device_placement=False)
     session = tf.Session(config=session_config)
     step = tools.Step(session)
 
@@ -104,9 +103,9 @@ if __name__ == "__main__":
 
     # Restore model (if exists).
     if os.path.exists(checkpoint.log_dir_model):
-        print("Restoring model from {}".format(checkpoint.log_dir_model))
+        print(f"Restoring model from {checkpoint.log_dir_model}")
         checkpoint.restore(session)
-        print("Will start training from step {}".format(step()))
+        print(f"Will start training from step {step()}")
     else:
         # Initialize all variables.
         session.run(tf.global_variables_initializer())
@@ -145,7 +144,7 @@ if __name__ == "__main__":
                 checkpoint.save(session)
 
             if cfg.save_named_model_every and step() % cfg.save_named_model_every == 0:
-                checkpoint.save(session, save_dir="model_{}".format(step()))
+                checkpoint.save(session, save_dir=f"model_{step()}")
 
             step.increment()
         except tf.errors.OutOfRangeError:

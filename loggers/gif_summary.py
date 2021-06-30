@@ -104,9 +104,9 @@ def py_gif_summary(tag, images, max_outputs, fps):
                 )
                 image_summ.encoded_image_string = "".encode("utf-8") if is_bytes else ""
         if num_outputs == 1:
-            summ_tag = "{}/gif".format(tag)
+            summ_tag = f"{tag}/gif"
         else:
-            summ_tag = "{}/gif/{}".format(tag, i)
+            summ_tag = f"{tag}/gif/{i}"
         summ.value.add(tag=summ_tag, image=image_summ)
     summ_str = summ.SerializeToString()
     return summ_str

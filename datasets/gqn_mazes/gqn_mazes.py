@@ -1,9 +1,6 @@
 """gqn_mazes dataset."""
 
-import tensorflow as tf
 import tensorflow_datasets as tfds
-
-import numpy as np
 
 _DESCRIPTION = """
 # GQN Mazes Dataset
@@ -58,9 +55,7 @@ class GqnMazes(tfds.core.GeneratorBasedBuilder):
             builder=self,
             description=_DESCRIPTION,
             features=tfds.features.FeaturesDict(
-                {
-                    "video": tfds.features.Video(shape=(None, 64, 64, 3)),
-                }
+                dict(video=tfds.features.Video(shape=(None, 64, 64, 3)))
             ),
             supervised_keys=None,
             homepage="https://archive.org/details/gqn_mazes",
@@ -71,14 +66,10 @@ class GqnMazes(tfds.core.GeneratorBasedBuilder):
         """Returns SplitGenerators."""
         path = dl_manager.download_and_extract(_DOWNLOAD_URL)
 
-        return {
-            "train": self._generate_examples(path / "train"),
-            "test": self._generate_examples(path / "test"),
-        }
+        return dict(train=self._generate_examples(path / "train"),
+                    test=self._generate_examples(path / "test"))
 
     def _generate_examples(self, path):
         """Yields examples."""
         for f in path.glob("*.mp4"):
-            yield str(f), {
-                "video": str(f.resolve()),
-            }
+            yield str(f), dict(video=str(f.resolve()))
